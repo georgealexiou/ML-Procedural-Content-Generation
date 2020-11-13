@@ -6,9 +6,11 @@ class Grid:
         self.existing_colors = []
 
     def add_node (self, node, x, y):
-        if (node.type != "point"):
-            if (self.nodes[x][y] == None): #what happens when adding connection to an existing connection node
-                self.nodes[x][y] = node
+        #?what happens when adding connection to an existing connection node
+
+        #if we want to add a connection we check adjacent
+        if (node.type == "connection"): 
+            
 
     #used for creating a pair of new colors
     def create_pair (self, node1, node2, x1, y1, x2, y2):
@@ -34,7 +36,7 @@ class Grid:
             self.nodes[x1][y1] = self.nodes[x2][y2]
             self.nodes[x2][y2] = temp
 
-        #if target node is connection (solver)
+        #if target node is connection (solver) -> swap and TODO break connection
         elif (self.nodes[x2][y2].type == "connection"):
             self.nodes[x2][y2] = self.nodes[x1][y1]
             self.nodes[x1][y1] = None
