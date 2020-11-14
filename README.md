@@ -1,2 +1,2 @@
-# ML-Procedural-Content-Generation
-COMP3200 - Part 3 Project
+# Procedural Content Generation in Games using Machine Learning
+## University of Southampton - Part 3 Project (COMP3200)
