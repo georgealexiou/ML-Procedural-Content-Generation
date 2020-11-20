@@ -2,16 +2,16 @@ class Grid:
 
     def __init__(self, size):
         self.size = size
-        self.nodes = [[]]
-        self.existing_colors = []
+        self.nodes = [[None]*size]*size
+        self.existing = []
 
-    def add_node (self, node, x, y):
+    def add_connection (self, node, x, y):
         #?what happens when adding connection to an existing connection node
 
         #if we want to add a connection we check adjacent
         if (node.type == "connection"):
-            if(self.nodes[x][y].type == "connection" and self.nodes[x][y].color != node.color):
-                self.break_adjacent_connection(x,y,self.nodes[x][y].color)
+            if(self.nodes[x][y].type == "connection" and self.nodes[x][y].name != node.name):
+                self.break_adjacent_connection(x,y,self.nodes[x][y].name)
 
     #used for creating a pair of new colors
     def create_pair (self, node1, node2, x1, y1, x2, y2):
@@ -34,47 +34,70 @@ class Grid:
                 self.nodes[x1][y1] = None
 
             #elif target node is node of different color -> swap
-            elif (self.nodes[x2][y2].type == "point" and self.nodes[x2][y2].color != self.nodes[x1][y1].color):
+            elif (self.nodes[x2][y2].type == "point" and self.nodes[x2][y2].name != self.nodes[x1][y1].name):
                 temp = self.nodes[x1][y1]
                 self.nodes[x1][y1] = self.nodes[x2][y2]
                 self.nodes[x2][y2] = temp
 
             #elif target node is connection (solver) and -> swap and TODO break connection
             elif(self.nodes[x2][y2].type == "connection"):
-                self.break_adjacent_connection(x2, y2, self.nodes[x2][y2].color)
+                self.break_adjacent_connection(x2, y2, self.nodes[x2][y2].name)
 
     #breaks connection if node is inserted in that position
-    def break_adjacent_connection(self, x, y, color):
+    def break_adjacent_connection(self, x, y, name):
         if (self.nodes[x-1][y].type == "connection"):
             self.remove_node(x-1, y)
-            self.break_adjacent_connection(x-1, y, color)
+            self.break_adjacent_connection(x-1, y, name)
         
         if (self.nodes[x+1][y].type == "connection"):
             self.remove_node(x+1, y)
-            self.break_adjacent_connection(x+1, y, color)
+            self.break_adjacent_connection(x+1, y, name)
 
         if (self.nodes[x][y-1].type == "connection"):
             self.remove_node(x, y-1)
-            self.break_adjacent_connection(x, y-1, color)
+            self.break_adjacent_connection(x, y-1, name)
 
         if (self.nodes[x][y+1].type == "connection"):
             self.remove_node(x, y+1)
-            self.break_adjacent_connection(x, y+1, color)
+            self.break_adjacent_connection(x, y+1, name)
 
     #unsafe removal of node
     def remove_node(self, x, y):
         self.nodes[x][y] == None
 
+    def print_grid(self):
+        return self.nodes
+
     def to_string(self):
-        print(self.nodes)
+        out = ""
+        for i in self.nodes:
+            for j in i:
+                counter = 0
+                if j != None:
+                    if counter > 0:
+                        out == out + counter
+                        counter = 0
+
+                    out = out + j.name
+                else:
+                    counter += 1
+
+        return out
+
+
 
 class Node:
     
-    def __init__(self, name, color, node_type):
-        self.label = color
+    def __init__(self, name, node_type):
+        self.name = name
         self.type = node_type
-        self.color = self.determine_color()
 
-    def determine_color(self):
-        return ""
+    def __str__():
+        return self.name
+    
 
+
+g = Grid(3)
+g.create_pair(Node("a","point"), Node("a", "point"), 0, 0, 1, 1)
+print(g.to_string())
+print(g.print_grid())
