@@ -75,7 +75,7 @@ class Grid:
                 counter = 0
                 if j != None:
                     if counter > 0:
-                        out == out + counter
+                        out = out + counter
                         counter = 0
 
                     out = out + j.name
