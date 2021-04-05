@@ -33,15 +33,6 @@ DIR_FLIP = {
     B: T
     }
 
-ANSI_LOOKUP = dict(R=101, B=104, Y=103, G=42,
-                   O=43, C=106, M=105, m=41,
-                   P=45, A=100, W=107, g=102,
-                   T=47, b=44, c=46, p=35)
-
-ANSI_RESET = '\033[0m'
-
-ANSI_CELL_FORMAT = '\033[30;{}m'
-
 PATH_REPRESENTATION = {
     LR: '─',
     TB: '│',
@@ -50,90 +41,6 @@ PATH_REPRESENTATION = {
     BL: '┐',
     BR: '┌'
     }
-
-RESULT_STRINGS = dict(s='successful',
-                      f='failed',
-                      u='unsolvable')
-
-def parse_grid(file, is_grid, filename = 'input'):
-    grid = []
-    code = ''
-    
-    if is_grid:
-        if not isinstance(file, str):
-            file = file.read()
-        
-        grid = file.splitlines()
-
-    else:
-        code = file
-        grid = code_to_grid(code)
-
-    if len(grid) < len(grid[0]):
-        print ('Invalid format')
-        return None, None, None
-
-    grid = grid[:len(grid[0])]
-
-    return grid, get_colors(grid, filename), grid_to_code(grid)
-
-def get_colors(grid, filename):
-
-    # count colors and build lookup
-    colors = dict()
-    color_count = []
-
-    for i, row in enumerate(grid):
-        if len(row) != len(grid[0]):
-            print ('{}:{} row size mismatch'.format(filename, i+1))
-            return None
-        for j, char in enumerate(row):
-            if char.isalnum(): # flow endpoint
-                if char in colors:
-                    color = colors[char]
-                    if color_count[color]:
-                        print ('{}:{}:{} too many {} already'.format(
-                            filename, i+1, j, char))
-                        return None
-                    color_count[color] = 1
-                else:
-                    color = len(colors)
-                    colors[char] = color
-                    color_count.append(0)
-
-    # check parity
-    for char, color in colors.items():
-        if not color_count[color]:
-            print ('color {} has start but no end!'.format(char))
-            return None
-
-    return colors
-
-
-'''Convert grid to code'''
-def code_to_grid(code):
-    grid = []
-    return grid
-
-'''Convert grid to code'''
-def grid_to_code(grid):
-    code = ''
-    counter = 0
-
-    for row in grid:
-
-        for char in row:
-            if char.isalnum(): #endpoint
-                if counter > 0:
-                    code = code + '{}'.format(counter)
-                    code = code + char
-                    counter = 0
-                elif counter == 0:
-                    code = code + char
-            else:
-                counter += 1
-
-    return code
 
 ######################################################################
 
@@ -305,11 +212,10 @@ def show_solution(colors, decoded):
 
     color_chars = [None]*len(colors)
 
-    do_color = True
+    do_color = False
 
     for char, color in colors.items():
         color_chars[color] = char
-        do_color = do_color and char in ANSI_LOOKUP
 
     for decoded_row in decoded:
         for (color, dir_type) in decoded_row:
@@ -319,26 +225,15 @@ def show_solution(colors, decoded):
             color_char = color_chars[color]
 
             if dir_type == -1:
-                if do_color:
-                    display_char = color_char
-                else:
                     display_char = color_char
             else:
                 display_char = PATH_REPRESENTATION[dir_type]
 
-            if do_color:
-
-                if color_char in ANSI_LOOKUP:
-                    ansi_code = ANSI_CELL_FORMAT.format(
-                        ANSI_LOOKUP[color_char])
-                else:
-                    ansi_code = ANSI_RESET
-
-                sys.stdout.write(ansi_code)
+                sys.stdout.write('\033[0m')
 
             sys.stdout.write(display_char)
 
-        sys.stdout.write(ANSI_RESET)
+        sys.stdout.write('\033[0m')
 
         sys.stdout.write('\n')
 
@@ -380,19 +275,30 @@ def solve_sat(grid, colors, color_var, dir_vars, clauses):
 
     solve_time = (datetime.now() - start).total_seconds()
 
-    if decoded is None:
-        print ('solver returned {} after {:,} cycle '\
-            'repairs and {:.3f} seconds'.format(
-                str(sol), repairs, solve_time))
-    else:
-        show_solution(colors, decoded)
-
     return sol, decoded, repairs, solve_time
 
 ######################################################################
 
+def get_data(code):
+    size = helper.get_grid_size(code)
+    print (size)
+
+    grid, colors, code = helper.parse_grid(code, False, size)
+
+    if(grid == None):
+        print('Invalid Code')
+    
+    else:
+        color_var, dir_vars, num_vars, clauses, reduce_time = sat_gen.reduce_to_sat(grid, colors)
+        sol, decoded, repairs, solve_time = solve_sat(grid, colors, color_var, dir_vars, clauses)
+        total_time = reduce_time + solve_time
+
+        print ('{}     {}     {}     {}     {}     {}     {}     {}'.format(code, size, num_vars, len(clauses), reduce_time, repairs, solve_time, total_time))
+        show_solution(colors, decoded)
+        #eturn code, size, num_vars, len(clauses), repairs, solve_time, total_time, sol, decoded
+
 '''Main loop if module run as script.'''
-def pyflow_solver_main(code):
+def pyflow_solver_main():
 
     parser = ArgumentParser(
         description='Solve Flow Free grids via reduction to SAT')
@@ -410,10 +316,7 @@ def pyflow_solver_main(code):
 
     max_width = max(len(f) for f in arguments.code)
 
-    grid_count = 0
-
     stats = dict()
-
 
     if not arguments.file and not arguments.id and code == '':
         print ('-f -i: Error invalid selection')
@@ -425,46 +328,19 @@ def pyflow_solver_main(code):
         # open file
         try:
             with open(arguments.code[0], 'r') as infile:
-                grid, colors, code = parse_grid(infile, True)
-                print (code)
+                grid, colors, code = helper.parse_grid(infile, True, 0)
         except IOError:
             print ('{}: error opening file'.format(arguments.code))
             sys.exit()
 
         if not colors is None:
             color_var, dir_vars, num_vars, clauses, reduce_time = sat_gen.reduce_to_sat(grid, colors)
-            sol, _, repairs, solve_time = solve_sat(grid, colors, color_var, dir_vars, clauses)
+            sol, decoded, repairs, solve_time = solve_sat(grid, colors, color_var, dir_vars, clauses)
             total_time = reduce_time + solve_time
 
-            if isinstance(sol, list):
-                result_char = 's'
-            elif str(sol) == 'UNSAT':
-                result_char = 'u'
-            else:
-                result_char = 'f'
+            print ('{}     {}     {}     {}     {}     {}     {}'.format(code, num_vars, len(clauses), reduce_time, repairs, solve_time, total_time))
+            show_solution(colors, decoded)
 
-            cur_stats = dict(repairs=repairs,
-                                reduce_time=reduce_time,
-                                solve_time=solve_time,
-                                total_time=total_time,
-                                num_vars=num_vars,
-                                num_clauses=len(clauses),
-                                count=1)
-
-            if not result_char in stats:
-                stats[result_char] = cur_stats
-            else:
-                for key in cur_stats.keys():
-                    stats[result_char][key] += cur_stats[key]
-
-                print ('{:>{}s} {} {:9,d} {:9,d} {:12,.3f} '\
-                    '{:3d} {:12,.3f} {:12,.3f}'.format(
-                        code, max_width, result_char,
-                        num_vars, len(clauses), reduce_time,
-                        repairs, solve_time, total_time))
-
-    elif arguments.id:
-        print('hello')
 
 if __name__ == '__main__':
-    pyflow_solver_main('')
+    get_data('4o1i9l6a11eb5g5e20j2g26n9f1f9l7h1o7n10j7c6pd3mc4h5p6im3kad23b2k1')

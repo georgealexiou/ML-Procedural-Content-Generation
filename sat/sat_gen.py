@@ -243,10 +243,4 @@ def reduce_to_sat(grid, colors):
 
     reduce_time = (datetime.now() - start).total_seconds()
 
-    print ('Clauses {:,}\nVariables: {:,}'.format(
-        len(clauses), num_vars, grouping=True))
-
-    print ('Time to solve: {:.3f} seconds'.format(reduce_time))
-    print
-
     return color_var, dir_vars, num_vars, clauses, reduce_time
