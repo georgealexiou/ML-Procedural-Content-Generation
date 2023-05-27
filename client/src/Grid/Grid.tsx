@@ -1,11 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useGrid } from "./useGrid";
+import { Cell } from "../Cell/Cell";
+import { useState } from "react";
 
 type GridProps = {
   gridString: String;
 };
 export const Grid: React.FC<GridProps> = ({ gridString }) => {
-  const { gridSize, grid } = useGrid({ gridString });
+  const { grid, colorMap } = useGrid({
+    gridString,
+  });
 
   return (
     <View
@@ -17,50 +21,12 @@ export const Grid: React.FC<GridProps> = ({ gridString }) => {
       }}
     >
       {grid.map((row, rowIndex) => (
-        <View
-          key={rowIndex}
-          style={{
-            flexDirection: "row",
-          }}
-        >
+        <View key={rowIndex} style={{ flexDirection: "row" }}>
           {row.map((cell, cellIndex) => (
-            <View
-              key={cellIndex}
-              style={{
-                height: 50,
-                width: 50,
-                backgroundColor: cell ? cell : "white",
-                alignItems: "center",
-                justifyContent: "center",
-                borderBottomWidth: 10,
-                borderRightWidth: 10,
-              }}
-            >
-              <Text style={{ fontSize: 20, color: "white" }}>{cell}</Text>
-            </View>
+            <Cell color={colorMap[cell]} />
           ))}
         </View>
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  gridContainer: {
-    flexDirection: "column",
-  },
-  rowContainer: {
-    flexDirection: "row",
-  },
-  cell: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
-  },
-  cellText: {
-    fontSize: 18,
-  },
-});
