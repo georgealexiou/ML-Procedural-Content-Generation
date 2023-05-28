@@ -6,10 +6,25 @@ type CellProps = {
   color: ColorValue;
   currentColor: ColorValue;
   setCurrentColor: React.Dispatch<React.SetStateAction<ColorValue>>;
+  currentLetter: String | null;
+  setCurrentLetter: React.Dispatch<React.SetStateAction<String | null>>;
+  grid: (String | null)[][];
+  setGrid: React.Dispatch<React.SetStateAction<(String | null)[][]>>;
+  rowIndex: number;
+  columnIndex: number;
 };
 
-export const Cell: React.FC<CellProps> = ({ color, currentColor, setCurrentColor }) => {
-  const [highlightedColor, setHighlightedColor] = useState<ColorValue | undefined>();
+export const Cell: React.FC<CellProps> = ({
+  color,
+  currentColor,
+  setCurrentColor,
+  grid,
+  setGrid,
+  rowIndex,
+  columnIndex,
+  currentLetter,
+  setCurrentLetter,
+}) => {
   return (
     <Pressable
       style={{
@@ -20,16 +35,22 @@ export const Cell: React.FC<CellProps> = ({ color, currentColor, setCurrentColor
         borderRightWidth: 10,
         borderBottomWidth: 10,
       }}
-      onPress={() => {
-        console.log(color, ' + ', currentColor, ' + ', highlightedColor);
+      onTouchStart={() => {
         if (color) {
           setCurrentColor(color);
+          setCurrentLetter(grid[rowIndex][columnIndex]);
           return;
         }
-
-        if (currentColor) {
+      }}
+      onTouchMove={() => {
+        if (color) return;
+        if (currentColor && currentLetter) {
           setHighlightedColor(currentColor);
+          const newGrid = grid;
+          newGrid[rowIndex][columnIndex] = currentLetter.toLowerCase();
         }
+
+        console.log(grid);
       }}>
       {highlightedColor ? (
         <View
