@@ -6,16 +6,17 @@ export const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRightWidth: 10,
-    borderBottomWidth: 10,
+    padding: 5,
   },
   node: {
     height: '100%',
     aspectRatio: 1,
+    borderRadius: 10,
   },
   connection: {
     height: '100%',
     aspectRatio: 1,
     opacity: 0.3,
+    borderRadius: 10,
   },
 });

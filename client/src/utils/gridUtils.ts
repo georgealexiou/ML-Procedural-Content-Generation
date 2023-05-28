@@ -68,3 +68,8 @@ export const isSameColor = (color1: string, color2: string) => {
   if (color1.toUpperCase() === color2.toUpperCase()) return true;
   return false;
 };
+
+export const isUpperCase = (str: string) => {
+  if (!str) return false;
+  return str === str.toUpperCase() && /[A-Z]/.test(str);
+};

@@ -1,7 +1,7 @@
 import React from 'react';
-import { useState } from 'react';
 import { ColorValue, Pressable, View } from 'react-native';
 import { styles } from './styles';
+import { isUpperCase } from '../utils/gridUtils';
 
 type CellProps = {
   setCurrentLetter: React.Dispatch<React.SetStateAction<string>>;
@@ -21,18 +21,18 @@ export const Cell: React.FC<CellProps> = ({
   colorMap,
 }) => {
   const cell: string = grid[rowIndex][columnIndex];
+  const onTouchStart = () => {
+    if (cell !== '') {
+      setCurrentLetter(cell);
+      setIsDrawing(true);
+      return;
+    } else {
+      setIsDrawing(false);
+    }
+  };
+
   return (
-    <Pressable
-      style={styles.cellPressable}
-      onTouchStart={() => {
-        if (cell !== '') {
-          setCurrentLetter(cell);
-          setIsDrawing(true);
-          return;
-        } else {
-          setIsDrawing(false);
-        }
-      }}>
+    <Pressable style={styles.cellPressable} onTouchStart={onTouchStart}>
       {isUpperCase(cell) ? (
         <View style={{ backgroundColor: colorMap[cell], ...styles.node }} />
       ) : (
@@ -46,8 +46,3 @@ export const Cell: React.FC<CellProps> = ({
     </Pressable>
   );
 };
-
-function isUpperCase(str) {
-  if (!str) return false;
-  return str === str.toUpperCase() && /[A-Z]/.test(str);
-}

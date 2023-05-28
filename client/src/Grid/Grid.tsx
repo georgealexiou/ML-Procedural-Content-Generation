@@ -20,7 +20,7 @@ export const Grid: React.FC<GridProps> = ({ gridString }) => {
       style={styles.grid}>
       {grid.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
-          {row.map((cell, cellIndex) => (
+          {row.map((_, cellIndex) => (
             <Cell
               setCurrentLetter={setCurrentLetter}
               grid={grid}
