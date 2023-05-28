@@ -1,3 +1,5 @@
+import { ColorValue } from 'react-native';
+
 export const calculateGridSize = (gridString: String): number => {
   let totalCells = 0;
   [...gridString].forEach((character) => {
@@ -51,7 +53,7 @@ const predefinedColors = [
   'navy',
 ];
 
-export const generateColorMap = (gridString: String): { [key: string]: String } => {
+export const generateColorMap = (gridString: String): { [key: string]: ColorValue } => {
   const uniqueLetters = [...new Set(gridString.replace(/[0-9]/g, ''))];
   const colorMap: { [key: string]: string } = {};
   uniqueLetters.forEach((letter, index) => {

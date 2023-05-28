@@ -3,16 +3,21 @@ import { calculateGridSize, generateColorMap, parseStringToGrid } from './gridUt
 import { ColorValue } from 'react-native';
 
 export const useGrid = ({ gridString }: { gridString: String }) => {
-  const [currentColor, setCurrentColor] = useState<ColorValue>('');
-
   const gridSize = calculateGridSize(gridString);
-  const grid = parseStringToGrid(gridString, gridSize);
   const colorMap = generateColorMap(gridString);
+
+  const [currentColor, setCurrentColor] = useState<ColorValue>('');
+  const [currentLetter, setCurrentLetter] = useState<String | null>(null);
+  const [grid, setGrid] = useState<(String | null)[][]>(parseStringToGrid(gridString, gridSize));
+
   return {
     gridSize,
     grid,
+    setGrid,
     colorMap,
     currentColor,
     setCurrentColor,
+    currentLetter,
+    setCurrentLetter,
   };
 };
