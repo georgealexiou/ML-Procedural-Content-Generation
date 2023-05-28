@@ -6,25 +6,30 @@ type CellProps = {
   color: ColorValue;
   currentColor: ColorValue;
   setCurrentColor: React.Dispatch<React.SetStateAction<ColorValue>>;
-  currentLetter: String | null;
-  setCurrentLetter: React.Dispatch<React.SetStateAction<String | null>>;
-  grid: (String | null)[][];
-  setGrid: React.Dispatch<React.SetStateAction<(String | null)[][]>>;
+  currentLetter: string;
+  setCurrentLetter: React.Dispatch<React.SetStateAction<string>>;
+  grid: string[][];
+  setGrid: React.Dispatch<React.SetStateAction<string[][]>>;
   rowIndex: number;
   columnIndex: number;
+  setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  colorMap: {
+    [key: string]: ColorValue;
+  };
 };
 
 export const Cell: React.FC<CellProps> = ({
   color,
-  currentColor,
   setCurrentColor,
   grid,
-  setGrid,
   rowIndex,
   columnIndex,
-  currentLetter,
   setCurrentLetter,
+  setIsDrawing,
+  colorMap,
+  currentColor,
 }) => {
+  const cell: string = grid[rowIndex][columnIndex];
   return (
     <Pressable
       style={{
@@ -36,40 +41,38 @@ export const Cell: React.FC<CellProps> = ({
         borderBottomWidth: 10,
       }}
       onTouchStart={() => {
-        if (color) {
+        if (cell !== '') {
           setCurrentColor(color);
-          setCurrentLetter(grid[rowIndex][columnIndex]);
+          setCurrentLetter(cell);
+          setIsDrawing(true);
           return;
+        } else {
+          setIsDrawing(false);
         }
-      }}
-      onTouchMove={() => {
-        if (color) return;
-        if (currentColor && currentLetter) {
-          setHighlightedColor(currentColor);
-          const newGrid = grid;
-          newGrid[rowIndex][columnIndex] = currentLetter.toLowerCase();
-        }
-
-        console.log(grid);
       }}>
-      {highlightedColor ? (
+      {isUpperCase(cell) ? (
         <View
           style={{
-            backgroundColor: highlightedColor,
+            backgroundColor: colorMap[cell],
             height: '100%',
             aspectRatio: 1,
-            opacity: 0.3,
           }}
         />
       ) : (
         <View
           style={{
-            backgroundColor: color,
+            backgroundColor: cell ? colorMap[cell.toUpperCase()] : 'black',
             height: '100%',
             aspectRatio: 1,
+            opacity: 0.3,
           }}
         />
       )}
     </Pressable>
   );
 };
+
+function isUpperCase(str) {
+  if (!str) return false;
+  return str === str.toUpperCase() && /[A-Z]/.test(str);
+}

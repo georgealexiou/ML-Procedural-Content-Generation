@@ -1,6 +1,6 @@
 import { ColorValue } from 'react-native';
 
-export const calculateGridSize = (gridString: String): number => {
+export const calculateGridSize = (gridString: string): number => {
   let totalCells = 0;
   [...gridString].forEach((character) => {
     totalCells += isNaN(parseInt(character)) ? 1 : parseInt(character);
@@ -9,15 +9,15 @@ export const calculateGridSize = (gridString: String): number => {
   return Math.floor(Math.sqrt(totalCells));
 };
 
-export const parseStringToGrid = (gridString: String, gridSize: number) => {
+export const parseStringToGrid = (gridString: string, gridSize: number) => {
   const grid = [];
-  let row: (string | null)[] = [];
+  let row: string[] = [];
 
   [...gridString].forEach((character) => {
     if (isNaN(parseInt(character))) {
       row.push(character);
     } else {
-      const spaces = Array(parseInt(character)).fill(null);
+      const spaces = Array(parseInt(character)).fill('');
       row.push(...spaces);
     }
 
@@ -53,7 +53,7 @@ const predefinedColors = [
   'navy',
 ];
 
-export const generateColorMap = (gridString: String): { [key: string]: ColorValue } => {
+export const generateColorMap = (gridString: string): { [key: string]: ColorValue } => {
   const uniqueLetters = [...new Set(gridString.replace(/[0-9]/g, ''))];
   const colorMap: { [key: string]: string } = {};
   uniqueLetters.forEach((letter, index) => {
@@ -61,4 +61,10 @@ export const generateColorMap = (gridString: String): { [key: string]: ColorValu
   });
 
   return colorMap;
+};
+
+export const isSameColor = (color1: string, color2: string) => {
+  if (color1 === '' || color2 === '') return;
+  if (color1.toUpperCase() === color2.toUpperCase()) return true;
+  return false;
 };
