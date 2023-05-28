@@ -1,12 +1,10 @@
 import { useCallback, useState } from 'react';
 import { calculateGridSize, generateColorMap, parseStringToGrid, isSameColor } from '../utils/gridUtils';
-import { ColorValue } from 'react-native';
 
 export const useGrid = ({ gridString }: { gridString: string }) => {
   const gridSize = calculateGridSize(gridString);
   const colorMap = generateColorMap(gridString);
 
-  const [currentColor, setCurrentColor] = useState<ColorValue>('');
   const [currentLetter, setCurrentLetter] = useState<string>('');
   const [grid, setGrid] = useState<string[][]>(parseStringToGrid(gridString, gridSize));
 
@@ -45,16 +43,11 @@ export const useGrid = ({ gridString }: { gridString: string }) => {
   );
 
   return {
-    gridSize,
     grid,
-    setGrid,
     colorMap,
-    currentColor,
-    setCurrentColor,
-    currentLetter,
     setCurrentLetter,
-    handleTouchMove,
     handleLayout,
+    handleTouchMove,
     setIsDrawing,
   };
 };

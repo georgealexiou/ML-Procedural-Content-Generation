@@ -2,24 +2,13 @@ import { View } from 'react-native';
 import { useGrid } from './useGrid';
 import { Cell } from '../Cell/Cell';
 import React from 'react';
+import { styles } from './styles';
 
 type GridProps = {
   gridString: string;
 };
 export const Grid: React.FC<GridProps> = ({ gridString }) => {
-  const {
-    grid,
-    setGrid,
-    colorMap,
-    currentColor,
-    setCurrentColor,
-    currentLetter,
-    setCurrentLetter,
-    gridSize,
-    handleLayout,
-    handleTouchMove,
-    setIsDrawing,
-  } = useGrid({
+  const { grid, colorMap, setCurrentLetter, handleLayout, handleTouchMove, setIsDrawing } = useGrid({
     gridString,
   });
 
@@ -28,23 +17,13 @@ export const Grid: React.FC<GridProps> = ({ gridString }) => {
       onLayout={handleLayout}
       onTouchEnd={() => setIsDrawing(null)}
       onTouchMove={handleTouchMove}
-      style={{
-        flexDirection: 'column',
-        borderTopWidth: 10,
-        borderLeftWidth: 10,
-        borderColor: 'black',
-      }}>
+      style={styles.grid}>
       {grid.map((row, rowIndex) => (
-        <View key={rowIndex} style={{ flexDirection: 'row' }}>
+        <View key={rowIndex} style={styles.row}>
           {row.map((cell, cellIndex) => (
             <Cell
-              color={colorMap[cell]}
-              currentColor={currentColor}
-              currentLetter={currentLetter}
               setCurrentLetter={setCurrentLetter}
-              setCurrentColor={setCurrentColor}
               grid={grid}
-              setGrid={setGrid}
               rowIndex={rowIndex}
               columnIndex={cellIndex}
               setIsDrawing={setIsDrawing}
