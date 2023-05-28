@@ -7,11 +7,8 @@ export const calculateGridSize = (gridString: String): number => {
   return Math.floor(Math.sqrt(totalCells));
 };
 
-export const parseStringToGrid = (
-  gridString: String,
-  gridSize: number
-): Grid => {
-  const grid: Grid = [];
+export const parseStringToGrid = (gridString: String, gridSize: number) => {
+  const grid = [];
   let row: (string | null)[] = [];
 
   [...gridString].forEach((character) => {
@@ -36,28 +33,26 @@ export const parseStringToGrid = (
 };
 
 const predefinedColors = [
-  "red",
-  "green",
-  "blue",
-  "yellow",
-  "orange",
-  "purple",
-  "cyan",
-  "magenta",
-  "lime",
-  "pink",
-  "teal",
-  "lavender",
-  "brown",
-  "beige",
-  "maroon",
-  "navy",
+  'red',
+  'green',
+  'blue',
+  'yellow',
+  'orange',
+  'purple',
+  'cyan',
+  'magenta',
+  'lime',
+  'pink',
+  'teal',
+  'lavender',
+  'brown',
+  'beige',
+  'maroon',
+  'navy',
 ];
 
-export const generateColorMap = (
-  gridString: String
-): { [key: string]: string } => {
-  const uniqueLetters = [...new Set(gridString.replace(/[0-9]/g, ""))];
+export const generateColorMap = (gridString: String): { [key: string]: String } => {
+  const uniqueLetters = [...new Set(gridString.replace(/[0-9]/g, ''))];
   const colorMap: { [key: string]: string } = {};
   uniqueLetters.forEach((letter, index) => {
     colorMap[letter] = predefinedColors[index % predefinedColors.length];
