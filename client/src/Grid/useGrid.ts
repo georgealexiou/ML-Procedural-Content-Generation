@@ -1,7 +1,15 @@
 import { useCallback, useState } from 'react';
 import { calculateGridSize, generateColorMap, parseStringToGrid, isSameColor } from '../utils/gridUtils';
 
-export const useGrid = ({ gridString }: { gridString: string }) => {
+export const useGrid = ({
+  gridString,
+  moveCount,
+  setMoveCount,
+}: {
+  gridString: string;
+  moveCount: number;
+  setMoveCount: React.Dispatch<React.SetStateAction<number>>;
+}) => {
   const gridSize = calculateGridSize(gridString);
   const colorMap = generateColorMap(gridString);
 
@@ -37,6 +45,7 @@ export const useGrid = ({ gridString }: { gridString: string }) => {
         if (!hasSameColorAdjacent(rowIndex, columnIndex)) return;
         newGrid[rowIndex][columnIndex] = currentLetter.toLowerCase();
         setGrid(newGrid);
+        setMoveCount(moveCount + 1);
       }
     },
     [layout, isDrawing]
@@ -49,5 +58,7 @@ export const useGrid = ({ gridString }: { gridString: string }) => {
     handleLayout,
     handleTouchMove,
     setIsDrawing,
+    gridSize,
+    setGrid,
   };
 };
